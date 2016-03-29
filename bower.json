@@ -1,0 +1,22 @@
+{
+  "name": "datavis",
+  "description": "data visualization",
+  "main": "app.js",
+  "authors": [
+    "Christopher Kurek <cakurek1@gmail.com>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "^3.5.16"
+  }
+}
