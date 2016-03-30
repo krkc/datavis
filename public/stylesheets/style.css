@@ -6,3 +6,30 @@ body {
 a {
   color: #00B7FF;
 }
+
+/* Bootstrap menu */
+.scrollable-menu {
+  height: auto;
+  max-height: 400px;
+  overflow-x: hidden;
+}
+
+/* D3.js chart */
+.bar {
+  fill: steelblue;
+}
+
+.axis text {
+  font: 1em sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
