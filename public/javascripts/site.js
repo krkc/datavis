@@ -5,35 +5,27 @@ $(document).ready(function(){
 
 // Page variables
 var menuPopulated = false;
+var countryIndexSelected = 0;
 
 // Data Variables
-var meanMap = {};
-var countMap = {};
+var data;
+var ageGroupsLabelsMap;
+var ageGroupLabels;
+var meansNestedByLocationAgeGroupId;
 
 
 // Chart variables
-var width = 960,
-    height = 500;
-
-var margin = {top: 20, right: 30, bottom: 50, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-
-var chart = d3.select(".chart")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+var wWidth, wHeight, width, height, chart,
+    margin = {top: 20, right: 20, bottom: 50, left: 50};
 
 // Parse data and begin visualization
-var d3_dataset = d3.csv("/data/IHME_GBD_2013_OBESITY_PREVALENCE_1990_2013_Y2014M10D08.CSV", filterRows, function (data) {
-    var ageGroupsLabelsMap = d3.map(data, function(d) { return d.ageGroupId; });
-    var ageGroupLabels = ageGroupsLabelsMap.values().map(function(d) { return d.ageGroupId; });
+var d3_dataset = d3.csv("/data/IHME_GBD_2013_OBESITY_PREVALENCE_1990_2013_Y2014M10D08.CSV", filterRows, function (_data) {
+    data = _data;
+    ageGroupsLabelsMap = d3.map(data, function(d) { return d.ageGroupId; });
+    ageGroupLabels = ageGroupsLabelsMap.values().map(function(d) { return d.ageGroupId; });
 
     var nestGen = d3.nest();
-    var meansNestedByLocationAgeGroupId = nestGen
+    meansNestedByLocationAgeGroupId = nestGen
         .key(function(d) { return d.location; })
         .key(function(d) { return d.ageGroupId })
         .rollup(function(d) { return d3.mean(d, function(s) { return +s.prevalence; }); })
@@ -48,13 +40,58 @@ var d3_dataset = d3.csv("/data/IHME_GBD_2013_OBESITY_PREVALENCE_1990_2013_Y2014M
             .data(meansNestedByLocationAgeGroupId)
             .enter().append("li")
             .append("a")
-            .attr("href", function(d, i) { return "javascript:refreshBars(" + i + ")" })
+            .attr("href", function(d, i) { return "javascript:setCountry(" + i + ")" })
             .text(function(d) { return d.key; })
         menuPopulated = true;
     }
 
+    // Get window size and create chart of that size
+    drawChart(0);
+    $(window).resize(drawChart);
+});
 
-    // -- Visualize the data -- //
+function filterRows(d) {
+    return { location: d.location_name, ageGroupId: d.age_group_id, ageGroup: d.age_group, prevalence: d.mean };
+}
+
+
+// -- datavis Functions -- //
+
+
+function drawChart() {
+    wWidth = $(".container").width();
+    wHeight = window.innerHeight * 0.75;
+
+    width = wWidth - margin.left - margin.right;
+    height = wHeight - margin.top - margin.bottom;
+
+    if (chart) {
+        chart.remove()
+    }
+
+    chart = d3.select(".chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    drawData(0);
+}
+
+function setCountry(selectedIndex) {
+    countryIndexSelected = selectedIndex;
+    drawData();
+}
+
+function drawData() {
+
+    chart.selectAll("rect, .chart_heading").remove();
+
+    chart.append("text")
+        .attr("class", "chart_heading")
+        .attr("x", (width) / 2)
+        .attr("y", 10)
+        .text("Obesity Rate vs Age, " + meansNestedByLocationAgeGroupId[countryIndexSelected].key)
+
     var barWidth = width / ageGroupsLabelsMap.keys().length;
 
     var x = d3.scale.ordinal()
@@ -96,26 +133,11 @@ var d3_dataset = d3.csv("/data/IHME_GBD_2013_OBESITY_PREVALENCE_1990_2013_Y2014M
         .text("Obesity Prevalence");
 
     chart.selectAll(".bar")
-        .data(meansNestedByLocationAgeGroupId[0].values)
+        .data(meansNestedByLocationAgeGroupId[countryIndexSelected].values)
         .enter().append("rect")
         .attr("class", "bar")
         .attr("x", function(d) { return x(+d.key); })
         .attr("y", function(d) { return y(+d.values); })
         .attr("height", function(d) { return height - y(+d.values); })
         .attr("width", x.rangeBand());
-
-});
-
-function filterRows(d) {
-    return { location: d.location_name, ageGroupId: d.age_group_id, ageGroup: d.age_group, prevalence: d.mean };
-}
-
-function refreshBars(countryIndex) {
-    chart.selectAll("rect").remove();
-    // Redraw data
-    visualizeData(countryIndex);
-}
-
-function visualizeData(countryIndexToVisualize) {
-
 }
