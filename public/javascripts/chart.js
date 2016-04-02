@@ -74,7 +74,7 @@ function BarChart() {
         // -- Draw heading -- //
         this.chart.append("text")
             .attr("class", "chart_heading")
-            .attr("x", (this.width) / 2)
+            .attr("x", (this.width) / 2 - (this.margin.left / 2))
             .attr("y", 10)
             .text("Obesity Rate vs Age, " + this.meansNestedByLocationAgeGroupId[this.countryIndexSelected].key);
 
