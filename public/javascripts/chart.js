@@ -51,7 +51,6 @@ function BarChart() {
             .append("g")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-        this.chart.selectAll(".chart_heading").remove();
 
         this.x = d3.scale.ordinal()
             .rangeRoundBands([0,this.width],.1);
@@ -71,12 +70,6 @@ function BarChart() {
         this.x.domain(this.ageGroupLabelIds);
         this.y.domain([0, d3.max(this.data, function(d) { return +d.prevalence; })]);
 
-        // -- Draw heading -- //
-        this.chart.append("text")
-            .attr("class", "chart_heading")
-            .attr("x", (this.width) / 2 - (this.margin.left / 2))
-            .attr("y", 10)
-            .text("Obesity Rate vs Age, " + this.meansNestedByLocationAgeGroupId[this.countryIndexSelected].key);
 
         // -- Draw axes & labels -- //
 
@@ -124,6 +117,15 @@ function BarChart() {
     BarChart.prototype.drawData = function (countryIndex) {
         if (countryIndex) this.countryIndexSelected = countryIndex;
         var self = this;    /* To keep the right context in nested functions */
+
+        this.chart.selectAll(".chart_heading").remove();
+        
+        // -- Draw heading -- //
+        this.chart.append("text")
+            .attr("class", "chart_heading")
+            .attr("x", (this.width) / 2 - (this.margin.left / 2))
+            .attr("y", 10)
+            .text("Obesity Rate vs Age, " + this.meansNestedByLocationAgeGroupId[this.countryIndexSelected].key);
 
         // -- Draw bars -- //
 
