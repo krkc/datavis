@@ -9,6 +9,10 @@ a {
 }
 
 /* Bootstrap menu */
+.dropdown-button {
+  display: none;
+}
+
 .scrollable-menu {
   height: auto;
   max-height: 400px;
@@ -18,25 +22,25 @@ a {
 /* D3.js chart */
 .chart_heading{
   font: 2em sans-serif;
-  stroke: steelblue;
+  fill: black;
+  stroke: black;
   text-anchor: middle;
 }
 
 .bar {
-  fill: steelblue;
+  fill: #7dff49;
 }
 
 .axis text {
-  font: 1em sans-serif;
+  font: .8em sans-serif;
 }
 
-.axis path,
-.axis line {
+.axis path, .axis line {
   fill: none;
   stroke: #000;
-  shape-rendering: crispEdges;
+  shape-rendering: geometricPrecision;
 }
 
 .x.axis path {
-  display: none;
+  display: block;
 }
